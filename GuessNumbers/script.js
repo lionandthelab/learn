@@ -58,3 +58,5 @@ document.querySelector('.again').addEventListener(
         document.querySelector('.number').style.width = '15rem';
     }
 );
+
+console.log('hi');
