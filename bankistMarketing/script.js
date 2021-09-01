@@ -238,3 +238,65 @@ document.querySelector('.nav__links').addEventListener('click', function (e) {
     document.querySelector(id).scrollIntoView({ behavior: 'smooth' });
   }
 });
+
+// 210901 - DOM Traversing - selecting element based on other elements' position(relative position)
+// Based on H1 element with 'When Banking meets minimalist' phrase
+const h1Travel = document.querySelector('h1');
+
+// Going down! -> selecting Child
+// selecting all elements inside h1 element
+console.log(h1.querySelectorAll('.highlight'));
+// directly select children elements of h1 -> nodes can be anything even comments!
+console.log(h1.childNodes);
+// directly select HTML children elements of h1
+console.log(h1.children);
+
+// following elements selectings are possible
+// h1.firstElementChild;
+// h1.firstChild;
+// h1.lastElementChild;
+// h1.lastChild;
+
+// Going Up! -> Selecting parent. note that it only returns one Node or element! because there couldnt be more than 1 parent
+console.log(h1.parentNode);
+console.log(h1.parentElement);
+
+// received query string and select nearest element
+// below will select the nearest element from h1 that has class name of header
+h1.closest('.header').style.background = 'var(--gradient-secondary)';
+h1.closest('h1'); // will be itself since it finds closest h1 tag from h1
+
+// Going sideways: siblings
+// will return element in the same depth ,if element is the first then NULL is returned for previousElementSibling method, so as last one with nextElemengSibling
+console.log(h1.previousElementSibling);
+console.log(h1.nextElementSibling);
+
+// 210901 - Tabbed Componenet
+// start with selecting tabs
+const tabs = document.querySelectorAll('.operations__tab');
+const tabsContainer = document.querySelector('.operations__tab-container');
+const tabsContent = document.querySelectorAll('.operations__content');
+
+// Below was old ways, not recommended way, for it makes numerous eventListeners!
+// tabs.forEach(t => t.addEventListener('click', () => console.log('tag')));
+// So Use Event Delegation(listening parent and capturing bubbling)
+tabsContainer.addEventListener('click', function (e) {
+  // below has critical drawback that returns span only if span inside button is clicked!
+  // const clicked = e.target;
+  const clicked = e.target.closest('.operations__tab');
+
+  // Guard clause, if clicked container area, prevent error to happen
+  if (!clicked) return;
+
+  // clearing button height before adding height to clicked button
+  tabs.forEach(t => t.classList.remove('operations__tab--active'));
+  clicked.classList.toggle('operations__tab--active');
+
+  // remove active classes,
+  tabsContent.forEach(c => c.classList.remove('operations__content--active'));
+
+  // Activate content area -- data-tab = "2" will be corresponded to dataset.tab
+  document
+    .querySelector(`.operations__content--${clicked.dataset.tab}`)
+    .classList.add('operations__content--active');
+});
