@@ -8,6 +8,8 @@ const overlay = document.querySelector('.overlay');
 const btnCloseModal = document.querySelector('.btn--close-modal');
 const btnsOpenModal = document.querySelectorAll('.btn--show-modal');
 
+const nav = document.querySelector('.nav');
+
 const openModal = function (e) {
   e.preventDefault();
   modal.classList.remove('hidden');
@@ -300,3 +302,87 @@ tabsContainer.addEventListener('click', function (e) {
     .querySelector(`.operations__content--${clicked.dataset.tab}`)
     .classList.add('operations__content--active');
 });
+
+// 210902 Passing Arguments to EventHandlers
+// Menu fade animation including logo
+
+// In order to add Menu fading menu, we set event delegation to 'nav' html tag! it works because of bubbling
+
+// REFACTORED FUNCTION
+const handleHover = function (e) {
+  // no closest method because the button has only one string
+  if (e.target.classList.contains('nav__link')) {
+    // selecting mouseoverred element
+    const link = e.target;
+    // goto closest parent and from there select all siblings
+    const siblings = link.closest('.nav').querySelectorAll('.nav__link');
+    // same as for the logo, the img tag
+    const logo = link.closest('.nav').querySelector('img');
+
+    // simply make opacity to half
+    siblings.forEach(el => {
+      if (el !== link) el.style.opacity = this;
+    });
+    logo.style.opacity = this;
+  }
+};
+// following is not working because it is passing value but not function,
+// nav.addEventListener('mouseover', handlerHover(e, 0.5));
+
+// following is working because it is passing 'callback function'!
+// but there is better way!
+// nav.addEventListener('mouseover', function (e) {
+//   handleHover(e, 0.5);
+// });
+
+// Passing "argument" into handlerHover function
+nav.addEventListener('mouseover', handleHover.bind(0.5));
+nav.addEventListener('mouseout', handleHover.bind(1.0));
+
+// Sticky Navigation - Scrolling Event
+// Scrollinging event is available in window not document
+// Whenever scrolled even just a pixel, it will be triggered
+// SO IN PERFORMANCE PERSPECTIVE, IT IS NoT GoOd!!!!!
+
+// const initialCoord = section1.getBoundingClientRect();
+// window.addEventListener('scroll', function () {
+//   if (window.scrollY > initialCoord.top) nav.classList.add('sticky');
+//   else nav.classList.remove('sticky');
+// });
+
+// -> better version (Intersection Observer API)
+// const obsCallback = function (entires, observerObjectItself) {
+//   entires.forEach(entry => {
+//     console.log(entry);
+//   });
+// };
+
+// const obsOption = {
+//   // root is the element the target is intersecting
+//   root: null, // this null option will enable observing whole viewport
+//   thresholdd: [0, 0.2], // percentage of intersection the callback function is called..?
+// };
+
+// const observer = new IntersectionObserver(obsCallback, obsOption);
+// observer.observe(section1);
+
+// Selecting An Observee, (the header part)
+const header = document.querySelector('.header');
+// for dynamic calculating of root margin
+const navHeight = nav.getBoundingClientRect().height;
+
+// Trigerred callback Function, it will trigerred whenever condition of threshold is meet
+const stickyNav = function (entries) {
+  const [entry] = entries;
+  console.log(entry);
+  if (!entry.isIntersecting) nav.classList.add('sticky');
+  else nav.classList.remove('sticky');
+};
+// IntersectionObserver will take callback and option object
+const headerObserver = new IntersectionObserver(stickyNav, {
+  root: null,
+  threshold: 0,
+  rootMargin: `-${navHeight}px`,
+});
+// DO Observing on header element
+headerObserver.observe(header);
