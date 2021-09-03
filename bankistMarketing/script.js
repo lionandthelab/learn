@@ -386,3 +386,37 @@ const headerObserver = new IntersectionObserver(stickyNav, {
 });
 // DO Observing on header element
 headerObserver.observe(header);
+
+// 210903 Revealing elements on Scroll
+// Effects itself are comming crom CSS, and adding them by adding class using JS
+
+// THere is CSS class called '.section--hidden', which makes html tag invisible(opacity 0) and go down little bit(transform translateY(8rem))
+/* HOw IT WORK
+   1. By adding this class to each section, will be invisible
+   2. as scroll reaches each section, IntersectionObserver will remove the hidden class 
+*/
+
+// Reveal Section
+// select All sections in the page
+const allSection = document.querySelectorAll('.section');
+
+// callback Function that removes the 'section--hidden' class for each section
+// then release the observing
+const revealSection = function (entires, observer) {
+  const [entry] = entires;
+  if (!entry.isIntersecting) return;
+  entry.target.classList.remove('section--hidden');
+  observer.unobserve(entry.target);
+};
+
+// for all viewport, if observing section takes 15% of viewport it will tigger callback function
+const sectionObserver = new IntersectionObserver(revealSection, {
+  root: null,
+  threshold: 0.15,
+});
+
+// add observer to each section
+allSection.forEach(function (section) {
+  sectionObserver.observe(section);
+  section.classList.add('section--hidden');
+});
