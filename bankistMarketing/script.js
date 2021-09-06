@@ -420,3 +420,34 @@ allSection.forEach(function (section) {
   sectionObserver.observe(section);
   section.classList.add('section--hidden');
 });
+
+// 210906 LazyLoading Image!
+// Strategy is that load low resolution image when loading page and when meet the intersection, load the full image
+// So need 2 images for each img tag
+// We will use Dataset JS
+// blur is the css effect fyi - filter: blur(20px)
+
+// select tag that has certain CSS property
+const imgTargets = document.querySelectorAll('img[data-src]');
+
+const loadImg = function (entries, observer) {
+  const [entry] = entries;
+
+  if (!entry.isIntersecting) return;
+
+  // If intersecting, then replace image with the data-src
+  entry.target.src = entry.target.dataset.src;
+  // Need to remove the filter out
+  entry.target.addEventListener('load', function () {
+    entry.target.classList.remove('lazy-img');
+  });
+  observer.unobserve(entry.target);
+};
+const imgObserver = new IntersectionObserver(loadImg, {
+  root: null,
+  threshold: 0,
+  // let user not notice the lazy loading
+  rootMargin: ' 200px',
+});
+
+imgTargets.forEach(img => imgObserver.observe(img));
