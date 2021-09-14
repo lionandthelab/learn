@@ -37,10 +37,88 @@ Person.prototype.calcAge = function () {
 jonas.calcAge();
 
 console.log(jonas.__proto__ === Person.prototype); //true
-console.log(Person.prototype.isPrototype(jonas)); //true
-console.log(Person.prototype.isPrototype(Person)); //false
+console.log(Person.prototype.isPrototypeOf(jonas)); //true
+console.log(Person.prototype.isPrototypeOf(Person)); //false
 
 Person.prototype.species = 'Homo Sapiens';
 console.log(jonas);
 console.log(jonas.hasOwnProperty('firstname')); //true
+
 console.log(jonas.hasOwnProperty('species')); //false -> because it just has access to prototype not in object
+
+// 210913 Prototype Inheritance and Chain
+/* 
+  Prototype Inehritance(delegation) -> Any properties that saved on __proto__ will be accessible throughout object Scope even though it is not defined in the object itself
+  In other word, if property is set to __proto__, then every Object made out of that prototype will have that property
+*/
+/*
+  Prototype has its parent Prototype, the Object Prototype
+  End of prototype chain is Null
+*/
+console.log(jonas.__proto__);
+console.log(jonas.__proto__.__proto__);
+console.log(jonas.__proto__.__proto__.__proto__);
+
+const arr = [1, 2, 33, 3, 3, 3, 3, 3, 3];
+
+console.log(arr.__proto__ === Array.prototype);
+
+// below will add functionality to all arr object
+// but DON DO IT for several reason
+//    1. MDN might will add same code
+//    2. Code will get messy in team project
+Array.prototype.unique = function () {
+  return [...new Set(this)];
+};
+
+console.log(arr.unique());
+
+// 210914 ES6 Class
+/* 
+  Class in JS is not working like Class in other language, it is just synthetic sugar, 
+*/
+
+// Class Expression
+// const PersonCl = class{
+
+// }
+
+// Class Decleration
+class PersonCl {
+  constructor(firstName, birthYear) {
+    this.firstName = firstName;
+    this.birthYear = birthYear;
+  }
+  // functions are prototypal inheritance, will not be in each object but in prototype
+  get age() {
+    return 2037 - this.birthYear;
+  }
+  calcAge() {
+    console.log(2016 - this.birthYear);
+  }
+}
+
+const jessica = new PersonCl('Jessica', 1414);
+jessica.calcAge();
+
+// 1. classes are not hoisted
+// 2. classes are first class citizens
+// 3. body of class is executed in strict mode
+
+// getter and setter
+// getter and setter is useful to do data validation
+const account = {
+  owner: 'jonas',
+  movement: [200, 500, 400, -2300],
+
+  get latest() {
+    return this.movement.slice(-1).pop();
+  },
+  // setter will take exactly one parameter
+  set latest(movement) {
+    this.movement.push(movement);
+  },
+};
+// use getter as property but not as function call
+console.log(account.latest);
+console.log((account.latest = 50));
