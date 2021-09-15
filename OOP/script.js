@@ -96,6 +96,10 @@ class PersonCl {
   calcAge() {
     console.log(2016 - this.birthYear);
   }
+  // 210915 Instance methods
+  static hey() {
+    console.log('hello');
+  }
 }
 
 const jessica = new PersonCl('Jessica', 1414);
@@ -122,3 +126,58 @@ const account = {
 // use getter as property but not as function call
 console.log(account.latest);
 console.log((account.latest = 50));
+
+// 210915 - Static Method
+/*
+  Array.from method will convert arraylike structure to real array
+  Array.from(document.querySelectorAll('h1'))
+  but cant do 
+  [1].from()
+  because it is built in Array constructor
+
+  we call from like method 'static'
+*/
+Person.hey = function () {
+  console.log('hi');
+};
+
+Person.hey();
+//jonas.hey(); this wont work!
+
+// Object.create - third way to implement prototype
+
+// below object will the prototype of Every PersonObject
+const PersonProto = {
+  calcAge() {
+    console.log(2016 - this.birthYear);
+  },
+  // setting the property
+  init(name, birthYear) {
+    this.firstname = name;
+    this.birthYear = birthYear;
+  },
+};
+
+// this is explicit way to set certain prototype to Object
+const steven = Object.create(PersonProto);
+steven.name = 'Steven';
+steven.birthYear = 2002;
+steven.calcAge();
+
+const sarah = Object.create(PersonProto);
+sarah.init('Sarah', 2020);
+
+// Inheritance between Class: Assume Person Class is existing already
+
+const Student = function (firstName, birthYear, course) {
+  Person.call(this, firstName, birthYear); // is inheriting Person Class
+  this.course = course;
+};
+Student.prototype = Object.create(Person.prototype);
+//function should be added after inheritance of prototype
+Student.prototype.introduce = function () {
+  console.log(`Mynameis ${this.firstName}, and I stydu ${this.course}`);
+};
+const mike = new Student('Mike', 2020, 'CS');
+console.log(mike);
+mike.introduce();
