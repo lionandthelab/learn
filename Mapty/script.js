@@ -162,17 +162,20 @@ class App {
     this.#workouts.push(workout);
 
     // render workout on map as marker
-    this._renderWorkoutMarker(workout);
+    this.renderWorkoutMarker(workout);
     // DIsplay marker
 
     // render workout on list
-    this._renderWorkout(workout);
 
     // hide form + clear input fileds
-    this._hideForm();
+    inputDistance.value =
+      inputDuration.value =
+      inputCadence.value =
+      inputElevation.value =
+        '';
   }
 
-  _renderWorkoutMarker(workout) {
+  renderWorkoutMarker(workout) {
     L.marker(workout.coords)
       .addTo(this.#map)
       .bindPopup(
@@ -185,9 +188,7 @@ class App {
           className: `${workout.type}-popup`,
         })
       )
-      .setPopupContent(
-        `${workout.type === 'running' ? '🏃‍♂️' : '🚴‍♀️'} ${workout.description}`
-      )
+      .setPopupContent('workout')
       .openPopup();
   }
   _renderWorkout(workout) {
