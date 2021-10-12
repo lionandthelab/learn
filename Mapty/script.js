@@ -70,7 +70,13 @@ class App {
   #workouts = [];
 
   constructor() {
+    // Get User's Position
     this._getPosition();
+
+    // Get Data from the localStorage
+    this._getLocalStorage();
+
+    // Attach the handler
     form.addEventListener('submit', this._newWorkout.bind(this));
     inputType.addEventListener('change', this._toggleElevationField);
     containerWorkouts.addEventListener('click', this._moveToPopup.bind(this));
@@ -96,6 +102,9 @@ class App {
 
     // method from leaflet like addEventLisntener
     this.#map.on('click', this._showForm.bind(this));
+    this.#workouts.forEach(work => {
+      this._renderWorkout(work);
+    });
   }
   _showForm(mapE) {
     this.#mapEvent = mapE;
@@ -162,20 +171,19 @@ class App {
     this.#workouts.push(workout);
 
     // render workout on map as marker
-    this.renderWorkoutMarker(workout);
+    this._renderWorkoutMarker(workout);
     // DIsplay marker
 
     // render workout on list
+    this._renderWorkout(workout);
 
     // hide form + clear input fileds
-    inputDistance.value =
-      inputDuration.value =
-      inputCadence.value =
-      inputElevation.value =
-        '';
+    this._hideForm();
+
+    this._setLocalStorage();
   }
 
-  renderWorkoutMarker(workout) {
+  _renderWorkoutMarker(workout) {
     L.marker(workout.coords)
       .addTo(this.#map)
       .bindPopup(
@@ -188,7 +196,9 @@ class App {
           className: `${workout.type}-popup`,
         })
       )
-      .setPopupContent('workout')
+      .setPopupContent(
+        `${workout.type === 'running' ? '🏃‍♂️' : '🚴‍♀️'} ${workout.description}`
+      )
       .openPopup();
   }
   _renderWorkout(workout) {
@@ -253,6 +263,21 @@ class App {
       animate: true,
       pan: { duration: 1 },
     });
+  }
+  _setLocalStorage() {
+    localStorage.setItem('workout', JSON.stringify(this.#workouts));
+  }
+  _getLocalStorage() {
+    const data = JSON.parse(localStorage.getItem('workouts'));
+    console.log(data);
+
+    if (!data) return;
+
+    this.#workouts = data;
+  }
+  reset() {
+    localStorage.removeItem('w orkouts');
+    location.reload();
   }
 }
 const app = new App();
